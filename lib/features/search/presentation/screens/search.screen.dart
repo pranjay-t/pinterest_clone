@@ -16,36 +16,50 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   int _currentCarouselIndex = 0;
 
   final List<Map<String, String>> _carouselItems = [
-    {'image': 'assets/images/keychain.jpg', 'query': 'keychain'},
-    {'image': 'assets/images/outfits.jpg', 'query': 'outfits'},
-    {'image': 'assets/images/photo_emb.jpg', 'query': 'photo embroidery'},
-    {'image': 'assets/images/quotes.jpg', 'query': 'motivational quotes'},
-    {'image': 'assets/images/iftar.jpg', 'query': 'iftar recipe'},
-    {'image': 'assets/images/home_decor.jpg', 'query': 'home decor'},
-    {'image': 'assets/images/scents.jpg', 'query': 'scents'},
+    {
+      'image': 'assets/images/keychain.jpg',
+      'query': 'keychain',
+      'title': 'Charming keepsake',
+      'desc': 'Customize your keychains',
+    },
+    {
+      'image': 'assets/images/outfits.jpg',
+      'query': 'outfits',
+      'title': 'Style it',
+      'desc': 'Turn basic into iconic',
+    },
+    {
+      'image': 'assets/images/photo_emb.jpg',
+      'query': 'photo embroidery',
+      'title': 'Cool craft',
+      'desc': 'The art of photo-embroidery',
+    },
+    {
+      'image': 'assets/images/quotes.jpg',
+      'query': 'motivational quotes',
+      'title': 'Go for it',
+      'desc': 'Quotes to recharge your motivation',
+    },
+    {
+      'image': 'assets/images/iftar.jpg',
+      'query': 'iftar recipe',
+      'title': 'Festive foods',
+      'desc': 'Go-to iftar recipe',
+    },
+    {
+      'image': 'assets/images/home_decor.jpg',
+      'query': 'home decor',
+      'title': 'Home sweet home',
+      'desc': 'Design your home your way',
+    },
+    {
+      'image': 'assets/images/scents.jpg',
+      'query': 'scents',
+      'title': 'Layering up',
+      'desc': 'Scent stacking is the trend to try',
+    },
   ];
 
-  final List<String> _carouselTitle = [
-    'Charming keepsake',
-    'Style it',
-    'Cool craft',
-    'Go for it',
-    'Festive foods',
-    'Home sweet home',
-    'Layering up',
-  ];
-
-  final List<String> _carouselDisc = [
-    'Customize your keychains',
-    'Turn basic into iconic',
-    'The art of photo-embroidery',
-    'Quotes to recharge your motivation',
-    'Go-to iftar recipe',
-    'Design your home your way',
-    'Scent stacking is the trend to try',
-  ];
-
-  // Using a list of maps for Ideas section to map type to query
   final List<Map<String, String>> _ideasConfig = [
     {
       'type': 'photography',
@@ -75,99 +89,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 60),
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      height: h * 0.4,
-                      viewportFraction: 1.0,
-                      enableInfiniteScroll: true,
-                      autoPlay: true,
-                      onPageChanged: (index, reason) {
-                        setState(() {
-                          _currentCarouselIndex = index;
-                        });
-                      },
-                    ),
-                    items: _carouselItems.asMap().entries.map((entry) {
-                      final item = entry.value;
-                      final index = entry.key;
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return GestureDetector(
-                            onTap: () {
-                              context.push('/search_result/${item['query']}');
-                            },
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                Image.asset(item['image']!, fit: BoxFit.cover),
-                                Positioned(
-                                  bottom: 10,
-                                  left: 16,
-                                  child: SizedBox(
-                                    height: 100,
-                                    width: w,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          _carouselTitle[index],
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: AppColors.lightBackground,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        Flexible(
-                                          child: Text(
-                                            _carouselDisc[index],
-                                            maxLines: 2,
-                                            style: const TextStyle(
-                                              fontSize: 28,
-                                              color: AppColors.lightBackground,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
-                  ),
+                  _buildCarousel(h, w),
                   const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: _carouselItems.asMap().entries.map((entry) {
-                      return Container(
-                        width: 8.0,
-                        height: 8.0,
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 8.0,
-                          horizontal: 4.0,
-                        ),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color:
-                              (Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black)
-                                  .withOpacity(
-                                    _currentCarouselIndex == entry.key
-                                        ? 0.9
-                                        : 0.4,
-                                  ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-
+                  _buildCarouselIndicators(context),
                   ..._ideasConfig.map((config) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
@@ -186,13 +110,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: GestureDetector(
-                onTap: () {
-                  context.push('/search_input');
-                },
+                onTap: () => context.push('/search_input'),
                 child: AbsorbPointer(
                   child: CustomTextField(
                     hintText: 'Search for ideas',
@@ -238,6 +159,90 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
+  Widget _buildCarousel(double h, double w) {
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: h * 0.4,
+        viewportFraction: 1.0,
+        enableInfiniteScroll: true,
+        autoPlay: true,
+        onPageChanged: (index, reason) {
+          setState(() {
+            _currentCarouselIndex = index;
+          });
+        },
+      ),
+      items: _carouselItems.map((item) {
+        return Builder(
+          builder: (BuildContext context) {
+            return GestureDetector(
+              onTap: () => context.push('/search_result/${item['query']}'),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset(item['image']!, fit: BoxFit.cover),
+                  Positioned(
+                    bottom: 10,
+                    left: 16,
+                    child: SizedBox(
+                      height: 100,
+                      width: w,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            item['title']!,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppColors.lightBackground,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Flexible(
+                            child: Text(
+                              item['desc']!,
+                              maxLines: 2,
+                              style: const TextStyle(
+                                fontSize: 28,
+                                color: AppColors.lightBackground,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildCarouselIndicators(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: _carouselItems.asMap().entries.map((entry) {
+        return Container(
+          width: 8.0,
+          height: 8.0,
+          margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: (Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black)
+                .withOpacity(_currentCarouselIndex == entry.key ? 0.9 : 0.4),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   Widget _buildIdeas({
     required double height,
     required String title,
@@ -255,7 +260,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Ideas for you',
                     style: TextStyle(
                       fontSize: 12,
@@ -265,7 +270,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   ),
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       color: AppColors.lightBackground,
@@ -273,7 +278,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   ),
                 ],
               ),
-
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -292,7 +296,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ],
           ),
         ),
-        Container(
+        SizedBox(
           height: height,
           child: Card(
             color: AppColors.darkBackground,

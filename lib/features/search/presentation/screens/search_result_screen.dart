@@ -5,6 +5,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinterest_clone/core/common/pinterest_refresh_indicator.dart';
 import 'package:pinterest_clone/core/theme/app_colors.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
 import 'package:pinterest_clone/features/home/presentation/widgets/pin_options_modal.dart';
 import 'package:pinterest_clone/features/search/presentation/providers/search_provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -59,66 +60,9 @@ class _SearchResultScreenState extends ConsumerState<SearchResultScreen> {
         child: Column(
           children: [
             const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios, size: 24),
-                    onPressed: () => context.pop(),
-                  ),
-                  Expanded(
-                    child: Container(
-                      height: 48,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: AppColors.darkBackground,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.darkTextPrimary),
-                      ),
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        widget.query,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.tune, size: 28),
-                    onPressed: () {},
-                  ),
-                ],
-              ),
-            ),
+            _buildHeader(context),
             const SizedBox(height: 10),
-            SizedBox(
-              height: 40,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: 6,
-                separatorBuilder: (context, index) => const SizedBox(width: 10),
-                itemBuilder: (context, index) {
-                  return Shimmer.fromColors(
-                    baseColor: AppColors.darkTextTertiary,
-                    highlightColor: AppColors.darkTextSecondary.withAlpha(190),
-                    child: Container(
-                      width: index == 0 ? 50 : 100,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+            _buildTagsShimmer(),
             const SizedBox(height: 10),
             Expanded(
               child: PinterestRefreshIndicator(
@@ -128,8 +72,8 @@ class _SearchResultScreenState extends ConsumerState<SearchResultScreen> {
                 child: searchState.isLoading && searchState.photos.isEmpty
                     ? _buildLoadingGrid()
                     : searchState.error != null && searchState.photos.isEmpty
-                    ? _buildErrorView(searchState.error!)
-                    : _buildMasonryGrid(searchState),
+                        ? _buildErrorView(searchState.error!)
+                        : _buildMasonryGrid(searchState),
               ),
             ),
             if (searchState.isMoreLoading)
@@ -139,6 +83,71 @@ class _SearchResultScreenState extends ConsumerState<SearchResultScreen> {
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios, size: 24),
+            onPressed: () => context.pop(),
+          ),
+          Expanded(
+            child: Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: AppColors.darkBackground,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.darkTextPrimary),
+              ),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                widget.query,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.tune, size: 28),
+            onPressed: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTagsShimmer() {
+    return SizedBox(
+      height: 40,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: 6,
+        separatorBuilder: (context, index) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          return Shimmer.fromColors(
+            baseColor: AppColors.darkTextTertiary,
+            highlightColor: AppColors.darkTextSecondary.withAlpha(190),
+            child: Container(
+              width: index == 0 ? 50 : 100,
+              height: 20,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -157,61 +166,64 @@ class _SearchResultScreenState extends ConsumerState<SearchResultScreen> {
       itemCount: state.photos.length,
       itemBuilder: (context, index) {
         final photo = state.photos[index];
-        return GestureDetector(
-          onTap: () {
-            context.push('/image_detail/${photo.id}', extra: photo);
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+        return _buildPinItem(photo);
+      },
+    );
+  }
+
+  Widget _buildPinItem(PexelsPhoto photo) {
+    return GestureDetector(
+      onTap: () {
+        context.push('/image_detail/${photo.id}', extra: photo);
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Stack(
             children: [
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: CachedNetworkImage(
-                      imageUrl: photo.src.large,
-                      placeholder: (context, url) => AspectRatio(
-                        aspectRatio: photo.width / photo.height,
-                        child: Container(color: Colors.grey.shade200),
-                      ),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                      fit: BoxFit.cover,
-                    ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: CachedNetworkImage(
+                  imageUrl: photo.src.large,
+                  placeholder: (context, url) => AspectRatio(
+                    aspectRatio: photo.width / photo.height,
+                    child: Container(color: Colors.grey.shade200),
                   ),
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.darkTextDisabled.withOpacity(0.4),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Image.asset(
-                          'assets/icons/save_pin_on.png',
-                          height: 14,
-                          width: 14,
-                          color: AppColors.lightBackground,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  fit: BoxFit.cover,
+                ),
               ),
-              const SizedBox(height: 6),
-              GestureDetector(
-                onTap: () {
-                  PinOptionsModal.show(context, photo);
-                },
-                child: const Icon(Icons.more_horiz, size: 20),
+              Positioned(
+                bottom: 8,
+                right: 8,
+                child: GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkTextDisabled.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Image.asset(
+                      'assets/icons/save_pin_on.png',
+                      height: 14,
+                      width: 14,
+                      color: AppColors.lightBackground,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
-        );
-      },
+          const SizedBox(height: 6),
+          GestureDetector(
+            onTap: () {
+              PinOptionsModal.show(context, photo);
+            },
+            child: const Icon(Icons.more_horiz, size: 20),
+          ),
+        ],
+      ),
     );
   }
 

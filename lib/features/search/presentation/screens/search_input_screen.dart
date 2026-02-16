@@ -39,6 +39,13 @@ class _SearchInputScreenState extends State<SearchInputScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: const BorderSide(
+        color: AppColors.darkTextTertiary,
+      ),
+    );
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -68,23 +75,11 @@ class _SearchInputScreenState extends State<SearchInputScreen> {
                         Icons.camera_alt,
                         color: AppColors.lightBackground,
                       ),
-                      
                       fillColor: AppColors.darkBackground,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(
-                          color: AppColors.darkTextTertiary,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(
-                          color: AppColors.darkTextTertiary,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(
+                      border: border,
+                      enabledBorder: border,
+                      focusedBorder: border.copyWith(
+                        borderSide: const BorderSide(
                           color: AppColors.darkTextPrimary,
                           width: 2,
                         ),
@@ -94,9 +89,7 @@ class _SearchInputScreenState extends State<SearchInputScreen> {
                   ),
                   const SizedBox(width: 6),
                   TextButton(
-                    onPressed: () {
-                      context.pop();
-                    },
+                    onPressed: () => context.pop(),
                     child: const Text(
                       'Cancel',
                       style: TextStyle(
