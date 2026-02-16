@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pinterest_clone/core/auth/providers/auth_provider.dart';
 import 'package:pinterest_clone/core/theme/app_colors.dart';
-import 'package:pinterest_clone/features/home/providers/home_provider.dart';
-import 'package:pinterest_clone/features/home/screen/home.screen.dart';
-import 'package:pinterest_clone/features/search/screens/search.screen.dart';
-import 'package:pinterest_clone/features/create/screens/create.screen.dart';
-import 'package:pinterest_clone/features/inbox/screens/inbox.screen.dart';
-import 'package:pinterest_clone/features/saved/screens/saved.screen.dart';
+import 'package:pinterest_clone/features/home/presentation/providers/home_provider.dart';
+import 'package:pinterest_clone/features/home/presentation/screens/home_screen.dart';
+import 'package:pinterest_clone/features/search/presentation/screens/search.screen.dart';
+import 'package:pinterest_clone/features/create/presentation/screens/create.screen.dart';
+import 'package:pinterest_clone/features/inbox/presentation/screens/inbox.screen.dart';
+import 'package:pinterest_clone/features/saved/presentation/screens/saved.screen.dart';
 import 'package:svg_flutter/svg.dart';
 
 class MainNavigationScreen extends ConsumerStatefulWidget {

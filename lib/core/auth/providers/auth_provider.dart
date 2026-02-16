@@ -24,7 +24,4 @@ class UserNotifier extends Notifier<User?> {
 
 final userProvider = NotifierProvider<UserNotifier, User?>(UserNotifier.new);
 
-final authStateProvider = StreamProvider<bool>((ref) {
-  final repo = ref.watch(authRepositoryProvider);
-  return repo.authStateChanges;
-});
+

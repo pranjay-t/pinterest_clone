@@ -1,9 +1,9 @@
 import 'package:clerk_flutter/clerk_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:pinterest_clone/core/common/custom_button.dart';
+import 'package:pinterest_clone/core/common/custom_text_field.dart';
 import 'package:pinterest_clone/core/theme/app_colors.dart';
-import 'package:pinterest_clone/core/widgets/custom_button.dart';
-import 'package:pinterest_clone/core/widgets/custom_text_field.dart';
-import 'package:pinterest_clone/features/login/constants/login_constants.dart';
+import 'package:pinterest_clone/features/login/data/constants/login_constants.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginForm extends StatefulWidget {

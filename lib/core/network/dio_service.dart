@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pinterest_clone/core/constants/api_paths.dart';
 import 'package:pinterest_clone/core/network/interceptors/logger_interceptor.dart';
 
 final dioServiceProvider = Provider<DioService>((ref) {
@@ -13,7 +14,7 @@ class DioService {
   DioService() {
     _dio = Dio(
       BaseOptions(
-        baseUrl: 'https://api.pexels.com/v1/',
+        baseUrl: AppPaths.baseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
         headers: {

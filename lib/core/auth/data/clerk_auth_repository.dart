@@ -17,11 +17,6 @@ class ClerkAuthRepository implements AuthRepository {
   }
 
   @override
-  Stream<bool> get authStateChanges {
-    return Stream.value(false);
-  }
-
-  @override
   Future<User?> getCurrentUser() async {
     final context = rootNavigatorKey.currentContext;
     if (context == null) return null;

@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:pinterest_clone/features/home/models/pexels_photo_model.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
 import 'package:share_plus/share_plus.dart';
 
 class PinOptionsModal extends StatelessWidget {
@@ -93,9 +93,7 @@ class PinOptionsModal extends StatelessWidget {
                 icon: Icons.share_outlined,
                 label: 'Share',
                 onTap: () {
-                  SharePlus.instance.share(
-                    ShareParams(uri: Uri.parse(photo.url)),
-                  );
+                  Share.share(photo.url);
                   Navigator.pop(context);
                 },
               ),

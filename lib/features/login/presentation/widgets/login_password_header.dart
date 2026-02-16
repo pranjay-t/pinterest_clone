@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pinterest_clone/features/login/constants/login_constants.dart';
+import 'package:pinterest_clone/features/login/data/constants/login_constants.dart';
 
 class LoginPasswordHeader extends StatelessWidget {
   const LoginPasswordHeader({super.key});

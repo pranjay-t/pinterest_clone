@@ -2,22 +2,24 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pinterest_clone/core/network/dio_service.dart';
 import 'package:pinterest_clone/core/utils/app_logger.dart';
-import 'package:pinterest_clone/features/home/models/pexels_photo_model.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
 
-final homeRepositoryProvider = Provider<HomeRepository>((ref) {
+final homeRemoteDataSourceProvider = Provider<HomeRemoteDataSource>((ref) {
   final dioService = ref.read(dioServiceProvider);
-  return HomeRepository(dioService.dio); // Assumes DioService exposes Dio instance
+  return HomeRemoteDataSourceImpl(dioService.dio);
 });
 
-class HomeRepository {
+abstract class HomeRemoteDataSource {
+  Future<List<PexelsPhoto>> fetchCuratedPhotos({required int page, int perPage = 15});
+}
+
+class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   final Dio _dio;
 
-  HomeRepository(this._dio);
+  HomeRemoteDataSourceImpl(this._dio);
 
-  Future<List<PexelsPhoto>> fetchCuratedPhotos({
-    required int page,
-    int perPage = 15,
-  }) async {
+  @override
+  Future<List<PexelsPhoto>> fetchCuratedPhotos({required int page, int perPage = 15}) async {
     try {
       AppLogger.logInfo('Fetching curated photos: page=$page, perPage=$perPage');
       

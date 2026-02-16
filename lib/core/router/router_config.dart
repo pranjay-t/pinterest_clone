@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:clerk_flutter/clerk_flutter.dart';
-import 'package:pinterest_clone/features/login/screen/login.screen.dart';
-import 'package:pinterest_clone/features/login/screen/login_password.screen.dart';
+import 'package:pinterest_clone/features/login/presentation/screens/login.screen.dart';
+import 'package:pinterest_clone/features/login/presentation/screens/login_password.screen.dart';
 import 'package:pinterest_clone/features/navigation/screens/main_navigation.screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();

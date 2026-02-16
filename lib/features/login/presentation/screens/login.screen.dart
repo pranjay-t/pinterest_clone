@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pinterest_clone/features/login/widgets/login_background.dart';
-import 'package:pinterest_clone/features/login/widgets/login_form.dart';
-import 'package:pinterest_clone/features/login/widgets/login_terms.dart';
+import 'package:pinterest_clone/features/login/presentation/widgets/login_background.dart';
+import 'package:pinterest_clone/features/login/presentation/widgets/login_form.dart';
+import 'package:pinterest_clone/features/login/presentation/widgets/login_terms.dart';
 
 
 class LoginScreen extends StatelessWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pinterest_clone/core/widgets/animated_background_image.dart';
-import 'package:pinterest_clone/features/login/constants/login_constants.dart';
+import 'package:pinterest_clone/core/common/animated_background_image.dart';
+import 'package:pinterest_clone/features/login/data/constants/login_constants.dart';
 
 
 class LoginBackground extends StatelessWidget {

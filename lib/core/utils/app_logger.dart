@@ -8,12 +8,18 @@ class AppLogger {
       lineLength: 120,
       colors: true,
       printEmojis: true,
-      printTime: false,
+      levelColors: {
+        Level.debug: AnsiColor.fg(12),
+        Level.info: AnsiColor.fg(10),
+        Level.warning: AnsiColor.fg(11),
+        Level.error: AnsiColor.fg(9),
+      },
+      dateTimeFormat: DateTimeFormat.dateAndTime,
     ),
   );
 
   static void logInfo(String message) {
-    _logger.i(message);
+    _logger.i(message,);
   }
 
   static void logError(String message, [dynamic error, StackTrace? stackTrace]) {

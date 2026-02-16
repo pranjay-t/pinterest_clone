@@ -4,11 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pinterest_clone/core/theme/app_colors.dart';
 import 'package:pinterest_clone/core/utils/app_logger.dart';
-import 'package:pinterest_clone/core/widgets/pinterest_refresh_indicator.dart';
-import 'package:pinterest_clone/features/home/providers/home_provider.dart';
+import 'package:pinterest_clone/core/common/pinterest_refresh_indicator.dart';
+import 'package:pinterest_clone/features/home/presentation/providers/home_provider.dart';
 import 'package:shimmer/shimmer.dart';
-
-import 'package:pinterest_clone/features/home/widgets/pin_options_modal.dart';
+import 'package:pinterest_clone/features/home/presentation/widgets/pin_options_modal.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -186,6 +185,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     aspectRatio: photo.width / photo.height,
                     child: Container(
                       color: AppColors.darkTextTertiary.withOpacity(0.2),
+                      width: double.infinity, 
+                      height: double.infinity,
                     ),
                   ),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
