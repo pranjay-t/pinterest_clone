@@ -1,5 +1,8 @@
+import 'dart:ffi';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:pinterest_clone/core/theme/app_colors.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -58,50 +61,73 @@ class PinOptionsModal extends StatelessWidget {
               const SizedBox(height: 20),
               _buildOptionItem(
                 context,
-                icon: Icons.bookmark_border_rounded,
+                imgPath: 'assets/icons/save_pin.png',
                 label: 'Save',
                 onTap: () {
                   Navigator.pop(context);
                 },
               ),
+              SizedBox(height: 8),
               _buildOptionItem(
                 context,
-                icon: Icons.download_rounded,
-                label: 'Download image',
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              _buildOptionItem(
-                context,
-                icon: Icons.search_rounded,
-                label: 'See more like this',
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              _buildOptionItem(
-                context,
-                icon: Icons.remove_circle_outline_rounded,
-                label: 'See less like this',
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              _buildOptionItem(
-                context,
-                icon: Icons.share_outlined,
                 label: 'Share',
+                imgPath: 'assets/icons/share.png',
                 onTap: () {
                   Share.share(photo.url);
                   Navigator.pop(context);
                 },
               ),
+              SizedBox(height: 8),
+
               _buildOptionItem(
                 context,
-                icon: Icons.report_gmailerrorred_rounded,
+                label: 'Search image',
+                scale: 1.1,
+                imgPath: 'assets/icons/search_off.png',
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              SizedBox(height: 8),
+
+              _buildOptionItem(
+                context,
+                label: 'Download image',
+                imgPath: 'assets/icons/download.png',
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+
+              SizedBox(height: 8),
+
+              _buildOptionItem(
+                context,
+                label: 'See more like this',
+                imgPath: 'assets/icons/heart_off.png',
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              SizedBox(height: 8),
+
+              _buildOptionItem(
+                context,
+                label: 'See less like this',
+                imgPath: 'assets/icons/see_less.png',
+                scale: 1.4,
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+
+              SizedBox(height: 8),
+
+              _buildOptionItem(
+                context,
+                imgPath: 'assets/icons/report.png',
                 label: 'Report pin',
-                subtitle: 'This goes against Pinterest\'s Community Guidelines',
+                scale: 0.9,
                 onTap: () {
                   Navigator.pop(context);
                 },
@@ -140,13 +166,17 @@ class PinOptionsModal extends StatelessWidget {
             ),
           ),
         ),
-        
+
         Positioned(
-          top: imageHeight / 2 + 16,
-          left: 16,
+          top: imageHeight / 2 + 12,
+          left: 12,
           child: IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.close, size: 28, color: isDark ? Colors.white : Colors.black),
+            icon: Icon(
+              Icons.close,
+              size: 28,
+              color: isDark ? Colors.white : Colors.black,
+            ),
           ),
         ),
       ],
@@ -155,46 +185,34 @@ class PinOptionsModal extends StatelessWidget {
 
   Widget _buildOptionItem(
     BuildContext context, {
-    required IconData icon,
     required String label,
-    String? subtitle,
+    String? imgPath,
     required VoidCallback onTap,
+    double? scale = 1,
   }) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 26),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 28),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 18,
-                    ),
-                  ),
-                  if (subtitle != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        subtitle,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: isDark ? Colors.grey[400] : Colors.grey[600],
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                ],
+            Transform.scale(
+              scale: scale,
+              child: Image.asset(
+                imgPath!,
+                height: 18,
+                width: 18,
+                color: AppColors.lightBackground,
+              ),
+            ),
+            SizedBox(width: 16),
+            Text(
+              label,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
               ),
             ),
           ],

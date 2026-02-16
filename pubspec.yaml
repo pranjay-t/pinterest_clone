@@ -48,6 +48,7 @@ dependencies:
   svg_flutter: ^0.0.1
   flutter_dotenv: ^6.0.0
   dartz: ^0.10.1
+  carousel_slider: ^5.1.2
 
 dev_dependencies:
   flutter_test:

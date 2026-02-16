@@ -5,7 +5,6 @@ import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dar
 import 'package:pinterest_clone/features/home/data/repository/home_repository_impl.dart';
 import 'package:pinterest_clone/features/home/domain/usecases/get_home_data_usecase.dart';
 
-// State definition
 class HomeState {
   final List<PexelsPhoto> photos;
   final bool isLoading;
@@ -42,7 +41,6 @@ class HomeState {
   }
 }
 
-// Notifier
 class HomeNotifier extends StateNotifier<HomeState> {
   final GetHomeDataUseCase _getHomeDataUseCase;
 
@@ -121,7 +119,6 @@ final getHomeDataUseCaseProvider = Provider<GetHomeDataUseCase>((ref) {
    return GetHomeDataUseCase(repository);
 });
 
-// Provider
 final homeProvider = StateNotifierProvider<HomeNotifier, HomeState>((ref) {
   final useCase = ref.read(getHomeDataUseCaseProvider);
   return HomeNotifier(useCase);

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pinterest_clone/core/theme/app_colors.dart';
 import 'package:pinterest_clone/core/utils/app_logger.dart';
 import 'package:pinterest_clone/core/common/pinterest_refresh_indicator.dart';
@@ -170,9 +171,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final photo = state.photos[index];
         return GestureDetector(
           onTap: () {
-            AppLogger.logInfo(
-              'Tapped photo: ${photo.id} by ${photo.photographer}',
-            );
+            context.push('/image_detail/${photo.id}');
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
