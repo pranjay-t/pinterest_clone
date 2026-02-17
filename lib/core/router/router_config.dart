@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:clerk_flutter/clerk_flutter.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
-import 'package:pinterest_clone/features/home/presentation/screens/image_detail_screen.dart';
+import 'package:pinterest_clone/features/home/presentation/screens/media_detail_screen.dart';
 import 'package:pinterest_clone/features/login/presentation/screens/login.screen.dart';
 import 'package:pinterest_clone/features/login/presentation/screens/login_password.screen.dart';
 import 'package:pinterest_clone/features/navigation/screens/main_navigation.screen.dart';
@@ -52,13 +53,13 @@ GoRouter createRouter(BuildContext context) {
         path: '/image_detail/:id',
         pageBuilder: (context, state) {
           final id = state.pathParameters['id'];
-          final photo = state.extra as PexelsPhoto?;
+          final media = state.extra as PexelsMedia?; // Updated type
 
           return CustomTransitionPage(
             key: state.pageKey,
-            child: ImageDetailScreen(
-              imageId: id!,
-              photo: photo,
+            child: MediaDetailScreen(
+              mediaId: id!,
+              media: media,
             ),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {

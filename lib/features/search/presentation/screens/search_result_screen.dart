@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:pinterest_clone/core/common/pinterest_refresh_indicator.dart';
 import 'package:pinterest_clone/core/theme/app_colors.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dart';
+import 'package:pinterest_clone/features/home/presentation/widgets/video_feed_item.dart';
 import 'package:pinterest_clone/features/home/presentation/widgets/pin_options_modal.dart';
 import 'package:pinterest_clone/features/search/presentation/providers/search_provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -165,8 +167,30 @@ class _SearchResultScreenState extends ConsumerState<SearchResultScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 8),
       itemCount: state.photos.length,
       itemBuilder: (context, index) {
-        final photo = state.photos[index];
-        return _buildPinItem(photo);
+        final item = state.photos[index];
+        if (item is PexelsVideo) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              VideoFeedItem(
+                video: item,
+                onTap: () {
+                  context.push('/image_detail/${item.id}', extra: item);
+                },
+              ),
+              const SizedBox(height: 6),
+              GestureDetector(
+                onTap: () {
+                  PinOptionsModal.show(context, item);
+                },
+                child: const Icon(Icons.more_horiz, size: 20),
+              ),
+            ],
+          );
+        } else if (item is PexelsPhoto) {
+          return _buildPinItem(item);
+        }
+        return const SizedBox.shrink();
       },
     );
   }

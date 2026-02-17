@@ -1,3 +1,5 @@
+import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dart';
+
 class PexelsResponse {
   final int page;
   final int perPage;
@@ -20,27 +22,19 @@ class PexelsResponse {
   }
 }
 
-class PexelsPhoto {
-  final int id;
-  final int width;
-  final int height;
-  final String url;
-  final String photographer;
-  final String photographerUrl;
-  final int photographerId;
-  final String avgColor;
+class PexelsPhoto extends PexelsMedia {
   final PexelsPhotoSrc src;
   final String alt;
 
   PexelsPhoto({
-    required this.id,
-    required this.width,
-    required this.height,
-    required this.url,
-    required this.photographer,
-    required this.photographerUrl,
-    required this.photographerId,
-    required this.avgColor,
+    required super.id,
+    required super.width,
+    required super.height,
+    required super.url,
+    required super.photographer,
+    required super.photographerUrl,
+    required super.photographerId,
+    required super.avgColor,
     required this.src,
     required this.alt,
   });

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:pinterest_clone/core/common/custom_button.dart';
 import 'package:pinterest_clone/core/theme/app_colors.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dart';
 import 'package:pinterest_clone/features/home/presentation/widgets/image_detail/image_options_bottom_sheet.dart';
 
 class ImageDetailActions extends StatelessWidget {
-  final PexelsPhoto photo;
-  const ImageDetailActions({super.key, required this.photo});
+  final PexelsMedia media;
+  const ImageDetailActions({super.key, required this.media});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,10 @@ class ImageDetailActions extends StatelessWidget {
             const SizedBox(width: 16),
             GestureDetector(
               onTap: () {
-                 ImageOptionsBottomSheet.show(context, photo);
+                 // TODO: Update BottomSheet to support Media or check type
+                 if (media is PexelsPhoto) {
+                    ImageOptionsBottomSheet.show(context, media as PexelsPhoto);
+                 }
               },
               child: _buildActionButton(
                 context,

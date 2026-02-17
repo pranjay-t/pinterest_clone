@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinterest_clone/core/theme/app_colors.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dart';
 import 'package:pinterest_clone/features/home/presentation/providers/related_photos_provider.dart';
+import 'package:pinterest_clone/features/home/presentation/widgets/video_feed_item.dart';
 import 'package:pinterest_clone/features/home/presentation/widgets/pin_options_modal.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -86,7 +89,7 @@ class RelatedPhotosGrid extends ConsumerWidget {
     );
   }
 
-  Widget _buildMasonryGrid(List<PexelsPhoto> photos) {
+  Widget _buildMasonryGrid(List<PexelsMedia> photos) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: MasonryGridView.count(
@@ -97,66 +100,88 @@ class RelatedPhotosGrid extends ConsumerWidget {
         crossAxisSpacing: 5,
         itemCount: photos.length,
         itemBuilder: (context, index) {
-          final photo = photos[index];
-          return GestureDetector(
-            onTap: () {
-              context.push('/image_detail/${photo.id}', extra: photo);
-            },
-            child: Column(
+          final item = photos[index];
+          if (item is PexelsVideo) {
+            return Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: CachedNetworkImage(
-                        imageUrl: photo.src.large,
-                        placeholder: (context, url) => AspectRatio(
-                          aspectRatio: photo.width / photo.height,
-                          child: Container(
-                            color: AppColors.darkTextTertiary.withOpacity(0.2),
-                            width: double.infinity,
-                            height: double.infinity,
-                          ),
-                        ),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 8,
-                      right: 8,
-                      child: GestureDetector(
-                        onTap: () {
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.darkTextDisabled.withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Image.asset(
-                            'assets/icons/save_pin_on.png',
-                            height: 14,
-                            width: 14,
-                            color: AppColors.lightBackground,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                VideoFeedItem(
+                  video: item,
+                  onTap: () {
+                    context.push('/image_detail/${item.id}', extra: item);
+                  },
                 ),
                 const SizedBox(height: 6),
                 GestureDetector(
                   onTap: () {
-                    PinOptionsModal.show(context, photo);
+                    PinOptionsModal.show(context, item);
                   },
                   child: const Icon(Icons.more_horiz, size: 20),
                 ),
               ],
-            ),
-          );
+            );
+          } else if (item is PexelsPhoto) {
+            return GestureDetector(
+              onTap: () {
+                context.push('/image_detail/${item.id}', extra: item);
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: CachedNetworkImage(
+                          imageUrl: item.src.large,
+                          placeholder: (context, url) => AspectRatio(
+                            aspectRatio: item.width / item.height,
+                            child: Container(
+                              color: AppColors.darkTextTertiary.withOpacity(0.2),
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 8,
+                        right: 8,
+                        child: GestureDetector(
+                          onTap: () {
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.darkTextDisabled.withOpacity(0.4),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Image.asset(
+                              'assets/icons/save_pin_on.png',
+                              height: 14,
+                              width: 14,
+                              color: AppColors.lightBackground,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  GestureDetector(
+                    onTap: () {
+                      PinOptionsModal.show(context, item);
+                    },
+                    child: const Icon(Icons.more_horiz, size: 20),
+                  ),
+                ],
+              ),
+            );
+          }
+           return const SizedBox.shrink();
         },
       ),
     );

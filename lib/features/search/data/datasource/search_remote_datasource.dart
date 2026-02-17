@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pinterest_clone/core/network/dio_service.dart';
 import 'package:pinterest_clone/core/utils/app_logger.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dart';
 
 final searchRemoteDataSourceProvider = Provider<SearchRemoteDataSource>((ref) {
   final dioService = ref.read(dioServiceProvider);
@@ -11,6 +12,7 @@ final searchRemoteDataSourceProvider = Provider<SearchRemoteDataSource>((ref) {
 
 abstract class SearchRemoteDataSource {
   Future<List<PexelsPhoto>> fetchPhotos({required String query, required int page, int perPage = 20});
+  Future<List<PexelsVideo>> searchVideos({required String query, required int page, int perPage = 20});
 }
 
 class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
@@ -38,6 +40,30 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
       return pexelsResponse.photos;
     } catch (e, stackTrace) {
       AppLogger.logError('Error fetching search photos', e, stackTrace);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<PexelsVideo>> searchVideos({required String query, required int page, int perPage = 20}) async {
+    try {
+      AppLogger.logInfo('Fetching search videos: query=$query, page=$page');
+      
+      final response = await _dio.get(
+        'videos/search',
+        queryParameters: {
+          'query': query,
+          'page': page,
+          'per_page': perPage,
+        },
+      );
+
+      final pexelsResponse = PexelsVideoResponse.fromJson(response.data);
+      AppLogger.logDebug('Fetched ${pexelsResponse.videos.length} videos for query: $query');
+      
+      return pexelsResponse.videos;
+    } catch (e, stackTrace) {
+      AppLogger.logError('Error fetching search videos', e, stackTrace);
       rethrow;
     }
   }

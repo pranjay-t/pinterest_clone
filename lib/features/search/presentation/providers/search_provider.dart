@@ -1,11 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:pinterest_clone/core/utils/app_logger.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
 import 'package:pinterest_clone/features/search/domain/usecase/search_photos_usecase.dart';
 
 class SearchState {
-  final List<PexelsPhoto> photos;
+  final List<PexelsMedia> photos;
   final bool isLoading;
   final bool isMoreLoading;
   final String? error;
@@ -24,7 +25,7 @@ class SearchState {
   });
 
   SearchState copyWith({
-    List<PexelsPhoto>? photos,
+    List<PexelsMedia>? photos,
     bool? isLoading,
     bool? isMoreLoading,
     String? error,

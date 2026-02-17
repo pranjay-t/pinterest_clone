@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pinterest_clone/core/utils/app_logger.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dart';
 import 'package:pinterest_clone/features/search/data/datasource/search_remote_datasource.dart';
 import 'package:pinterest_clone/features/search/domain/repository/search_repository.dart';
 
@@ -30,6 +31,21 @@ class SearchRepositoryImpl implements SearchRepository {
       return Right(result);
     } catch (e) {
       AppLogger.logError('SearchRepositoryImpl: Error fetching photos', e);
+      return Left(Exception(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Exception, List<PexelsVideo>>> searchVideos({
+    required String query,
+    required int page,
+    int perPage = 20,
+  }) async {
+    try {
+      final result = await remoteDataSource.searchVideos(query: query, page: page, perPage: perPage);
+      return Right(result);
+    } catch (e) {
+      AppLogger.logError('SearchRepositoryImpl: Error fetching videos', e);
       return Left(Exception(e.toString()));
     }
   }

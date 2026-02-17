@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pinterest_clone/core/utils/app_logger.dart';
 import 'package:pinterest_clone/features/home/data/datasource/home_remote_datasource.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dart';
 import 'package:pinterest_clone/features/home/domain/repository/home_repository.dart';
 
 final homeRepositoryProvider = Provider<HomeRepository>((ref) {
@@ -25,6 +26,35 @@ class HomeRepositoryImpl implements HomeRepository {
       return Right(result);
     } catch (e) {
       AppLogger.logError('HomeRepositoryImpl: Error fetching photos', e);
+      return Left(Exception(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Exception, List<PexelsVideo>>> searchVideos({
+    required String query,
+    required int page,
+    int perPage = 15,
+  }) async {
+    try {
+      final result = await remoteDataSource.searchVideos(query: query, page: page, perPage: perPage);
+      return Right(result);
+    } catch (e) {
+      AppLogger.logError('HomeRepositoryImpl: Error searching videos', e);
+      return Left(Exception(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Exception, List<PexelsVideo>>> fetchPopularVideos({
+    required int page,
+    int perPage = 15,
+  }) async {
+    try {
+      final result = await remoteDataSource.fetchPopularVideos(page: page, perPage: perPage);
+      return Right(result);
+    } catch (e) {
+      AppLogger.logError('HomeRepositoryImpl: Error fetching popular videos', e);
       return Left(Exception(e.toString()));
     }
   }

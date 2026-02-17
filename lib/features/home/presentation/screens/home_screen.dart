@@ -8,6 +8,9 @@ import 'package:pinterest_clone/core/utils/app_logger.dart';
 import 'package:pinterest_clone/core/common/pinterest_refresh_indicator.dart';
 import 'package:pinterest_clone/features/home/presentation/providers/home_provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dart';
+import 'package:pinterest_clone/features/home/presentation/widgets/video_feed_item.dart';
 import 'package:pinterest_clone/features/home/presentation/widgets/pin_options_modal.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -168,40 +171,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 8),
       itemCount: state.photos.length,
       itemBuilder: (context, index) {
-        final photo = state.photos[index];
-        return GestureDetector(
-          onTap: () {
-            context.push('/image_detail/${photo.id}');
-          },
-          child: Column(
+        final item = state.photos[index];
+        if (item is PexelsVideo) {
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: CachedNetworkImage(
-                  imageUrl: photo.src.large,
-                  placeholder: (context, url) => AspectRatio(
-                    aspectRatio: photo.width / photo.height,
-                    child: Container(
-                      color: AppColors.darkTextTertiary.withOpacity(0.2),
-                      width: double.infinity, 
-                      height: double.infinity,
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  fit: BoxFit.cover,
-                ),
+              VideoFeedItem(
+                video: item,
+                onTap: () {
+                  context.push('/image_detail/${item.id}', extra: item);
+                },
               ),
               const SizedBox(height: 6),
               GestureDetector(
                 onTap: () {
-                  PinOptionsModal.show(context, photo);
+                  PinOptionsModal.show(context, item);
                 },
                 child: const Icon(Icons.more_horiz, size: 20),
               ),
             ],
-          ),
-        );
+          );
+        } else if (item is PexelsPhoto) {
+          return GestureDetector(
+            onTap: () {
+              context.push('/image_detail/${item.id}', extra: item);
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: CachedNetworkImage(
+                    imageUrl: item.src.large,
+                    placeholder: (context, url) => AspectRatio(
+                      aspectRatio: item.width / item.height,
+                      child: Container(
+                        color: AppColors.darkTextTertiary.withOpacity(0.2),
+                        width: double.infinity, 
+                        height: double.infinity,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                GestureDetector(
+                  onTap: () {
+                    PinOptionsModal.show(context, item);
+                  },
+                  child: const Icon(Icons.more_horiz, size: 20),
+                ),
+              ],
+            ),
+          );
+        }
+        return const SizedBox.shrink();
       },
     );
   }

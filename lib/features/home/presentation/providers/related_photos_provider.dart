@@ -2,12 +2,13 @@ import 'dart:math';
 
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:pinterest_clone/core/utils/app_logger.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
 import 'package:pinterest_clone/features/home/domain/usecases/get_home_data_usecase.dart';
 import 'package:pinterest_clone/features/home/presentation/providers/home_provider.dart';
 
 class RelatedPhotosState {
-  final List<PexelsPhoto> photos;
+  final List<PexelsMedia> photos;
   final bool isLoading;
   final String? error;
 
@@ -18,7 +19,7 @@ class RelatedPhotosState {
   });
 
   RelatedPhotosState copyWith({
-    List<PexelsPhoto>? photos,
+    List<PexelsMedia>? photos,
     bool? isLoading,
     String? error,
   }) {

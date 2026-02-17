@@ -3,21 +3,23 @@ import 'dart:ffi';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pinterest_clone/core/theme/app_colors.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dart';
 import 'package:share_plus/share_plus.dart';
 
 class PinOptionsModal extends StatelessWidget {
-  final PexelsPhoto photo;
+  final PexelsMedia media;
 
-  const PinOptionsModal({super.key, required this.photo});
+  const PinOptionsModal({super.key, required this.media});
 
-  static Future<void> show(BuildContext context, PexelsPhoto photo) {
+  static Future<void> show(BuildContext context, PexelsMedia media) {
     return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       useRootNavigator: true,
-      builder: (context) => PinOptionsModal(photo: photo),
+      builder: (context) => PinOptionsModal(media: media),
     );
   }
 
@@ -27,8 +29,15 @@ class PinOptionsModal extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final double imageWidth = 120.0;
-    final double aspectRatio = photo.width / photo.height;
+    final double aspectRatio = media.width / media.height;
     final double imageHeight = imageWidth / aspectRatio;
+    
+    String imageUrl = '';
+    if (media is PexelsPhoto) {
+      imageUrl = (media as PexelsPhoto).src.medium;
+    } else if (media is PexelsVideo) {
+      imageUrl = (media as PexelsVideo).image;
+    }
 
     return Stack(
       alignment: Alignment.topCenter,
@@ -73,7 +82,7 @@ class PinOptionsModal extends StatelessWidget {
                 label: 'Share',
                 imgPath: 'assets/icons/share.png',
                 onTap: () {
-                  Share.share(photo.url);
+                  Share.share(media.url);
                   Navigator.pop(context);
                 },
               ),
@@ -156,7 +165,7 @@ class PinOptionsModal extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: CachedNetworkImage(
-                imageUrl: photo.src.medium,
+                imageUrl: imageUrl,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
                   color: isDark ? Colors.grey[800] : Colors.grey[200],
