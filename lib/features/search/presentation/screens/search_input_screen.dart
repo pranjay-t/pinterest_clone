@@ -18,7 +18,6 @@ class _SearchInputScreenState extends State<SearchInputScreen> {
   void initState() {
     super.initState();
     _searchController = TextEditingController();
-    // Auto focus the text field
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
     });

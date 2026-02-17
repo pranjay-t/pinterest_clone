@@ -53,7 +53,6 @@ class SearchNotifier extends StateNotifier<SearchState> {
   Future<void> searchPhotos(String query) async {
     if (query.isEmpty) return;
     
-    // Reset state for new search
     state = state.copyWith(
       isLoading: true,
       photos: [],
@@ -92,7 +91,7 @@ class SearchNotifier extends StateNotifier<SearchState> {
     result.fold(
       (error) {
         AppLogger.logError('Error fetching more search photos', Exception(error));
-        state = state.copyWith(isMoreLoading: false); // Keep existing photos on error
+        state = state.copyWith(isMoreLoading: false); 
       },
       (newPhotos) {
         if (newPhotos.isEmpty) {

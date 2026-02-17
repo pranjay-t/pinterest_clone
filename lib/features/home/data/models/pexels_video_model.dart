@@ -1,4 +1,7 @@
+import 'package:hive/hive.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dart';
+
+part 'pexels_video_model.g.dart';
 
 class PexelsVideoResponse {
   final int page;
@@ -28,10 +31,15 @@ class PexelsVideoResponse {
   }
 }
 
+@HiveType(typeId: 6)
 class PexelsVideo extends PexelsMedia {
+  @HiveField(8)
   final int duration;
+  @HiveField(9)
   final String image;
+  @HiveField(10)
   final List<PexelsVideoFile> videoFiles;
+  @HiveField(11)
   final List<PexelsVideoPicture> videoPictures;
 
   PexelsVideo({
@@ -39,10 +47,10 @@ class PexelsVideo extends PexelsMedia {
     required int width,
     required int height,
     required String url,
-    required String photographerName,
-    required String photographerProfileUrl,
-    required int photographerIdVal,
-    required String? avgColorVal,
+    required String photographer,
+    required String photographerUrl,
+    required int photographerId,
+    required String? avgColor,
     required this.duration,
     required this.image,
     required this.videoFiles,
@@ -52,10 +60,10 @@ class PexelsVideo extends PexelsMedia {
           width: width,
           height: height,
           url: url,
-          photographer: photographerName,
-          photographerUrl: photographerProfileUrl,
-          photographerId: photographerIdVal,
-          avgColor: avgColorVal ?? '#000000',
+          photographer: photographer,
+          photographerUrl: photographerUrl,
+          photographerId: photographerId,
+          avgColor: avgColor ?? '#000000',
         );
 
   factory PexelsVideo.fromJson(Map<String, dynamic> json) {
@@ -65,10 +73,10 @@ class PexelsVideo extends PexelsMedia {
       width: json['width'],
       height: json['height'],
       url: json['url'],
-      photographerName: user['name'],
-      photographerProfileUrl: user['url'],
-      photographerIdVal: user['id'],
-      avgColorVal: null, // Video object doesn't seem to have avg_color at root based on sample, sample has it null inside video object? Sample: "avg_color": null in the root.
+      photographer: user['name'],
+      photographerUrl: user['url'],
+      photographerId: user['id'],
+      avgColor: null,
       duration: json['duration'],
       image: json['image'],
       videoFiles: (json['video_files'] as List)
@@ -81,14 +89,23 @@ class PexelsVideo extends PexelsMedia {
   }
 }
 
+@HiveType(typeId: 7)
 class PexelsVideoFile {
+  @HiveField(0)
   final int id;
+  @HiveField(1)
   final String quality;
+  @HiveField(2)
   final String fileType;
+  @HiveField(3)
   final int width;
+  @HiveField(4)
   final int height;
+  @HiveField(5)
   final double fps;
+  @HiveField(6)
   final String link;
+  @HiveField(7)
   final int size;
 
   PexelsVideoFile({
@@ -116,9 +133,13 @@ class PexelsVideoFile {
   }
 }
 
+@HiveType(typeId: 9)
 class PexelsVideoPicture {
+  @HiveField(0)
   final int id;
+  @HiveField(1)
   final int nr;
+  @HiveField(2)
   final String picture;
 
   PexelsVideoPicture({

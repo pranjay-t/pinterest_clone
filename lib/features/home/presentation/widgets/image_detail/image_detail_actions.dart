@@ -3,7 +3,10 @@ import 'package:pinterest_clone/core/common/custom_button.dart';
 import 'package:pinterest_clone/core/theme/app_colors.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dart';
+import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dart';
 import 'package:pinterest_clone/features/home/presentation/widgets/image_detail/image_options_bottom_sheet.dart';
+import 'package:pinterest_clone/features/saved/data/models/local_media_model.dart';
+import 'package:pinterest_clone/features/saved/presentation/widgets/save_to_board_modal.dart';
 
 class ImageDetailActions extends StatelessWidget {
   final PexelsMedia media;
@@ -60,7 +63,39 @@ class ImageDetailActions extends StatelessWidget {
         CustomButton.solid(
           context: context,
           text: 'Save',
-          onPressed: () {},
+          onPressed: () {
+            // Create LocalMediaModel
+            String imageUrl = '';
+            MediaType type = MediaType.photo;
+            
+            if (media is PexelsPhoto) {
+              imageUrl = (media as PexelsPhoto).src.medium;
+              type = MediaType.photo;
+            } else if (media is PexelsVideo) {
+              imageUrl = (media as PexelsVideo).image;
+              type = MediaType.video;
+            }
+
+            final localMedia = LocalMediaModel(
+              id: media.id.toString(),
+              url: imageUrl,
+              type: type,
+              width: media.width,
+              height: media.height,
+              title: media.photographer, 
+              description: media.url,
+              photographer: media.photographer,
+              photographerUrl: media.photographerUrl,
+              savedAt: DateTime.now(),
+            );
+
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => SaveToBoardModal(media: localMedia),
+            );
+          },
           backgroundColor: AppColors.pinterestRed,
           textColor: Colors.white,
           radius: 16,

@@ -1,8 +1,15 @@
+import 'package:hive/hive.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dart';
 
+part 'pexels_photo_model.g.dart';
+
+@HiveType(typeId: 3)
 class PexelsResponse {
+  @HiveField(0)
   final int page;
+  @HiveField(1)
   final int perPage;
+  @HiveField(2)
   final List<PexelsPhoto> photos;
 
   PexelsResponse({
@@ -22,8 +29,11 @@ class PexelsResponse {
   }
 }
 
+@HiveType(typeId: 4)
 class PexelsPhoto extends PexelsMedia {
+  @HiveField(8)
   final PexelsPhotoSrc src;
+  @HiveField(9)
   final String alt;
 
   PexelsPhoto({
@@ -55,14 +65,23 @@ class PexelsPhoto extends PexelsMedia {
   }
 }
 
+@HiveType(typeId: 5)
 class PexelsPhotoSrc {
+  @HiveField(0)
   final String original;
+  @HiveField(1)
   final String large2x;
+  @HiveField(2)
   final String large;
+  @HiveField(3)
   final String medium;
+  @HiveField(4)
   final String small;
+  @HiveField(5)
   final String portrait;
+  @HiveField(6)
   final String landscape;
+  @HiveField(7)
   final String tiny;
 
   PexelsPhotoSrc({

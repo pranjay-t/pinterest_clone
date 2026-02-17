@@ -22,9 +22,7 @@ class SearchPhotosUseCase {
     required int page,
     int perPage = 20,
   }) async {
-    // Calculate videos to fetch (ratio 10:1)
-    // For 20 photos, ~2 videos.
-    final videoPerPage = max(1, (perPage / 10).ceil());
+    final videoPerPage = max(2, (perPage / 10).ceil());
 
     final photosFuture = repository.fetchPhotos(
       query: query,

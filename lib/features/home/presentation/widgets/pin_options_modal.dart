@@ -6,14 +6,16 @@ import 'package:pinterest_clone/core/theme/app_colors.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dart';
+import 'package:pinterest_clone/features/saved/data/models/local_media_model.dart';
+import 'package:pinterest_clone/features/saved/presentation/widgets/save_to_board_modal.dart';
 import 'package:share_plus/share_plus.dart';
 
 class PinOptionsModal extends StatelessWidget {
-  final PexelsMedia media;
+  final dynamic media;
 
   const PinOptionsModal({super.key, required this.media});
 
-  static Future<void> show(BuildContext context, PexelsMedia media) {
+  static Future<void> show(BuildContext context, dynamic media) {
     return showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -29,7 +31,10 @@ class PinOptionsModal extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     final double imageWidth = 120.0;
-    final double aspectRatio = media.width / media.height;
+    // Handle aspect ratio safely
+    final double width = (media is LocalMediaModel) ? media.width.toDouble() : media.width.toDouble();
+    final double height = (media is LocalMediaModel) ? media.height.toDouble() : media.height.toDouble();
+    final double aspectRatio = width / height;
     final double imageHeight = imageWidth / aspectRatio;
     
     String imageUrl = '';
@@ -37,6 +42,8 @@ class PinOptionsModal extends StatelessWidget {
       imageUrl = (media as PexelsPhoto).src.medium;
     } else if (media is PexelsVideo) {
       imageUrl = (media as PexelsVideo).image;
+    } else if (media is LocalMediaModel) {
+      imageUrl = (media as LocalMediaModel).url;
     }
 
     return Stack(
@@ -68,15 +75,90 @@ class PinOptionsModal extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              _buildOptionItem(
-                context,
-                imgPath: 'assets/icons/save_pin.png',
-                label: 'Save',
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-              SizedBox(height: 8),
+              if (media is! LocalMediaModel) ...[
+                _buildOptionItem(
+                  context,
+                  imgPath: 'assets/icons/save_pin.png',
+                  label: 'Save',
+                  onTap: () {
+                    Navigator.pop(context);
+                    
+                    // Create LocalMediaModel
+                    String imageUrl = '';
+                    String? videoUrl;
+                    int? duration;
+                    MediaType type = MediaType.photo;
+                    PexelsPhoto? pexelsPhoto;
+                    PexelsVideo? pexelsVideo;
+                    
+                    if (media is PexelsPhoto) {
+                      imageUrl = (media as PexelsPhoto).src.medium;
+                      type = MediaType.photo;
+                      pexelsPhoto = media as PexelsPhoto;
+                    } else if (media is PexelsVideo) {
+                      final video = media as PexelsVideo;
+                      imageUrl = video.image;
+                      type = MediaType.video;
+                      duration = video.duration;
+                      pexelsVideo = video;
+                      
+                      // Select best video file (SD or similar logic to feed)
+                       try {
+                        final videoFile = video.videoFiles.firstWhere(
+                          (f) => f.quality == 'sd' && f.width >= 360, 
+                          orElse: () => video.videoFiles.first
+                        );
+                        videoUrl = videoFile.link;
+                      } catch (e) {
+                         if (video.videoFiles.isNotEmpty) {
+                           videoUrl = video.videoFiles.first.link;
+                         }
+                      }
+                    }
+
+                    final localMedia = LocalMediaModel(
+                      id: media.id.toString(),
+                      url: imageUrl,
+                      type: type,
+                      width: media.width,
+                      height: media.height,
+                      title: media.photographer, // Using photographer as title/desc for now
+                      description: media.url,
+                      photographer: media.photographer,
+                      photographerUrl: media.photographerUrl,
+                      savedAt: DateTime.now(),
+                      videoUrl: videoUrl,
+                      duration: duration,
+                      pexelsPhoto: pexelsPhoto,
+                      pexelsVideo: pexelsVideo,
+                    );
+
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => SaveToBoardModal(media: localMedia),
+                    );
+                  },
+                ),
+                SizedBox(height: 8),
+              ] else ...[
+                 _buildOptionItem(
+                  context,
+                  imgPath: 'assets/icons/save_pin.png',
+                  label: 'Organize', // Already saved
+                  onTap: () {
+                    Navigator.pop(context);
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => SaveToBoardModal(media: media),
+                    );
+                  },
+                ),
+                SizedBox(height: 8),
+              ],
               _buildOptionItem(
                 context,
                 label: 'Share',

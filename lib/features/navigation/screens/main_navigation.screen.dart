@@ -10,6 +10,7 @@ import 'package:pinterest_clone/features/create/presentation/screens/create.scre
 import 'package:pinterest_clone/features/inbox/presentation/screens/inbox.screen.dart';
 import 'package:pinterest_clone/features/saved/presentation/screens/saved.screen.dart';
 import 'package:svg_flutter/svg.dart';
+import 'package:pinterest_clone/features/create/presentation/widgets/create_modal.dart';
 
 class MainNavigationScreen extends ConsumerStatefulWidget {
   const MainNavigationScreen({super.key});
@@ -30,7 +31,17 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
     const SavedScreen(),
   ];
 
+
   void _onItemTapped(int index) {
+    if (index == 2) {
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        builder: (context) => const CreateModal(),
+      );
+      return;
+    }
     setState(() {
       _currentIndex = index;
     });
@@ -39,7 +50,6 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
   @override
   void initState() {
     super.initState();
-    // Refresh user data when navigation screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(userProvider.notifier).refresh();
     });

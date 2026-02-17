@@ -9,6 +9,7 @@ import 'package:pinterest_clone/features/login/presentation/screens/login_passwo
 import 'package:pinterest_clone/features/navigation/screens/main_navigation.screen.dart';
 import 'package:pinterest_clone/features/search/presentation/screens/search_input_screen.dart';
 import 'package:pinterest_clone/features/search/presentation/screens/search_result_screen.dart';
+import 'package:pinterest_clone/features/create/presentation/screens/create_board_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -90,6 +91,13 @@ GoRouter createRouter(BuildContext context) {
           final query = state.pathParameters['query']!;
           return SearchResultScreen(query: query);
         },
+      ),
+      GoRoute(
+        path: '/create_board',
+        pageBuilder: (context, state) => const MaterialPage(
+          fullscreenDialog: true,
+          child: CreateBoardScreen(),
+        ),
       ),
     ],
   );
