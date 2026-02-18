@@ -11,6 +11,8 @@ import 'package:pinterest_clone/features/home/presentation/providers/related_pho
 import 'package:pinterest_clone/features/home/presentation/widgets/video_feed_item.dart';
 import 'package:pinterest_clone/features/home/presentation/widgets/pin_options_modal.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:pinterest_clone/features/saved/data/models/local_media_model.dart';
+import 'package:pinterest_clone/features/saved/presentation/widgets/save_to_board_modal.dart';
 
 class RelatedPhotosGrid extends ConsumerWidget {
   final String imageId;
@@ -89,6 +91,65 @@ class RelatedPhotosGrid extends ConsumerWidget {
     );
   }
 
+  void _onSave(BuildContext context, PexelsMedia item) {
+    String imageUrl = '';
+    MediaType type = MediaType.photo;
+
+    if (item is PexelsPhoto) {
+      imageUrl = item.src.medium;
+      type = MediaType.photo;
+    } else if (item is PexelsVideo) {
+      imageUrl = item.image;
+      type = MediaType.video;
+    }
+
+    final localMedia = LocalMediaModel(
+      id: item.id.toString(),
+      url: imageUrl,
+      type: type,
+      width: item.width,
+      height: item.height,
+      title: item.photographer,
+      description: item.url,
+      photographer: item.photographer,
+      photographerUrl: item.photographerUrl,
+      savedAt: DateTime.now(),
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => SaveToBoardModal(media: localMedia),
+    );
+  }
+
+  Widget _buildSaveButton(BuildContext context, PexelsMedia item) {
+    return Positioned(
+      bottom: 8,
+      right: 8,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8, right: 8),
+        child: GestureDetector(
+          onTap: () => _onSave(context, item),
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.darkTextDisabled.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Image.asset(
+              'assets/icons/save_pin_on.png',
+              height: 14,
+              width: 14,
+              color: AppColors.lightBackground,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildMasonryGrid(List<PexelsMedia> photos) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -102,72 +163,19 @@ class RelatedPhotosGrid extends ConsumerWidget {
         itemBuilder: (context, index) {
           final item = photos[index];
           if (item is PexelsVideo) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                VideoFeedItem(
-                  video: item,
-                  onTap: () {
-                    context.push('/image_detail/${item.id}', extra: item);
-                  },
-                ),
-                const SizedBox(height: 6),
-                GestureDetector(
-                  onTap: () {
-                    PinOptionsModal.show(context, item);
-                  },
-                  child: const Icon(Icons.more_horiz, size: 20),
-                ),
-              ],
-            );
-          } else if (item is PexelsPhoto) {
-            return GestureDetector(
-              onTap: () {
-                context.push('/image_detail/${item.id}', extra: item);
-              },
+            return Container(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Stack(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: CachedNetworkImage(
-                          imageUrl: item.src.large,
-                          placeholder: (context, url) => AspectRatio(
-                            aspectRatio: item.width / item.height,
-                            child: Container(
-                              color: AppColors.darkTextTertiary.withOpacity(0.2),
-                              width: double.infinity,
-                              height: double.infinity,
-                            ),
-                          ),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                          fit: BoxFit.cover,
-                        ),
+                      VideoFeedItem(
+                        video: item,
+                        onTap: () {
+                          context.push('/image_detail/${item.id}', extra: item);
+                        },
                       ),
-                      Positioned(
-                        bottom: 8,
-                        right: 8,
-                        child: GestureDetector(
-                          onTap: () {
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.darkTextDisabled.withOpacity(0.4),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Image.asset(
-                              'assets/icons/save_pin_on.png',
-                              height: 14,
-                              width: 14,
-                              color: AppColors.lightBackground,
-                            ),
-                          ),
-                        ),
-                      ),
+                      _buildSaveButton(context, item),
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -180,8 +188,52 @@ class RelatedPhotosGrid extends ConsumerWidget {
                 ],
               ),
             );
+          } else if (item is PexelsPhoto) {
+            return Container(
+              child: GestureDetector(
+                onTap: () {
+                  context.push('/image_detail/${item.id}', extra: item);
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: CachedNetworkImage(
+                            imageUrl: item.src.large,
+                            placeholder: (context, url) => AspectRatio(
+                              aspectRatio: item.width / item.height,
+                              child: Container(
+                                color: AppColors.darkTextTertiary.withOpacity(
+                                  0.2,
+                                ),
+                                width: double.infinity,
+                                height: double.infinity,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        _buildSaveButton(context, item),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    GestureDetector(
+                      onTap: () {
+                        PinOptionsModal.show(context, item);
+                      },
+                      child: const Icon(Icons.more_horiz, size: 20),
+                    ),
+                  ],
+                ),
+              ),
+            );
           }
-           return const SizedBox.shrink();
+          return const SizedBox.shrink();
         },
       ),
     );

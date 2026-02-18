@@ -7,6 +7,7 @@ import 'package:pinterest_clone/core/utils/app_logger.dart';
 import 'package:pinterest_clone/features/saved/presentation/providers/saved_provider.dart';
 import 'package:pinterest_clone/features/saved/presentation/widgets/saved_masonry_grid.dart';
 import 'package:pinterest_clone/features/saved/presentation/widgets/select_layout_bottom_sheet.dart';
+import 'package:pinterest_clone/features/saved/presentation/providers/layout_provider.dart';
 
 class PinsTabScreen extends ConsumerStatefulWidget {
   const PinsTabScreen({super.key});
@@ -31,6 +32,23 @@ class _PinsTabScreenState extends ConsumerState<PinsTabScreen> {
       borderSide: const BorderSide(color: AppColors.darkTextTertiary),
     );
     final state = ref.watch(savedMediaProvider(null));
+    int crossAxisCount = 3;
+    String layoutIcon = 'assets/icons/compact_grid.png';
+    final layout = ref.watch(pinLayoutProvider);
+    switch (layout) {
+      case PinLayout.wide:
+        crossAxisCount = 1;
+        layoutIcon = 'assets/icons/wide_grid.png';
+        break;
+      case PinLayout.standard:
+        crossAxisCount = 2;
+        layoutIcon = 'assets/icons/standard_grid.png';
+        break;
+      case PinLayout.compact:
+        crossAxisCount = 3;
+        layoutIcon = 'assets/icons/compact_grid.png';
+        break;
+    }
 
     return Column(
       children: [
@@ -91,7 +109,7 @@ class _PinsTabScreenState extends ConsumerState<PinsTabScreen> {
                 ),
                 padding: EdgeInsets.all(10),
                 child: Image.asset(
-                  'assets/icons/compact_grid.png',
+                  layoutIcon,
                   height: 16,
                   width: 16,
                   color: AppColors.lightBackground,
@@ -157,12 +175,17 @@ class _PinsTabScreenState extends ConsumerState<PinsTabScreen> {
               }
 
               if (state.error != null && state.media.isEmpty) {
-                AppLogger.logError('PinsTabScreen: Error loading pins', Exception(state.error));
+                AppLogger.logError(
+                  'PinsTabScreen: Error loading pins',
+                  Exception(state.error),
+                );
                 return Center(child: Text('Error: ${state.error}'));
               }
 
               final mediaList = state.media;
-              AppLogger.logDebug('PinsTabScreen: Displaying ${mediaList.length} pins');
+              AppLogger.logDebug(
+                'PinsTabScreen: Displaying ${mediaList.length} pins',
+              );
 
               if (mediaList.isEmpty) {
                 return const Center(
@@ -173,8 +196,13 @@ class _PinsTabScreenState extends ConsumerState<PinsTabScreen> {
                 );
               }
 
-              return SavedMasonryGrid(
-                mediaList: mediaList,
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: SavedMasonryGrid(
+                  key: ValueKey(crossAxisCount),
+                  mediaList: mediaList,
+                  crossAxisCount: crossAxisCount,
+                ),
               );
             },
           ),

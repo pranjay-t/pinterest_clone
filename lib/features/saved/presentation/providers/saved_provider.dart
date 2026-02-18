@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:pinterest_clone/core/common/failure.dart';
 import 'package:pinterest_clone/core/utils/app_logger.dart';
 import 'package:pinterest_clone/features/saved/data/datasources/saved_local_datasource.dart';
 import 'package:pinterest_clone/features/saved/data/models/local_board_model.dart';

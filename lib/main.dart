@@ -13,7 +13,6 @@ void main() async {
 
   await HiveRegistrar.init();
 
-
   runApp(
     ClerkAuth(
       config: ClerkAuthConfig(

@@ -6,10 +6,19 @@ import 'package:pinterest_clone/features/home/data/models/pexels_media_model.dar
 import 'package:pinterest_clone/features/home/data/models/pexels_photo_model.dart';
 import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+
 class ImageDetailInfo extends StatelessWidget {
   final PexelsMedia media;
 
   const ImageDetailInfo({super.key, required this.media});
+
+  Future<void> _launchURL() async {
+    final Uri url = Uri.parse(media.url);
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +59,6 @@ class ImageDetailInfo extends StatelessWidget {
           ),
           const SizedBox(height: 8),
         ] else if (media is PexelsVideo) ...[
-           // Videos might not have 'alt' in the basic model or we interpret it differently.
-           // We can render 'Video Content' or just skip if no description.
            const Text(
             "Video Content", 
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
@@ -63,7 +70,7 @@ class ImageDetailInfo extends StatelessWidget {
           width: double.infinity,
           radius: 12,
           text: 'Visit',
-          onPressed: () {},
+          onPressed: _launchURL,
           backgroundColor: AppColors.darkTextDisabled,
           textColor: Colors.white,
         ),

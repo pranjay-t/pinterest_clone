@@ -10,12 +10,21 @@ import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dar
 import 'package:pinterest_clone/features/home/presentation/widgets/video_feed_item.dart';
 import 'package:pinterest_clone/features/home/presentation/widgets/pin_options_modal.dart';
 import 'package:pinterest_clone/features/search/presentation/providers/search_provider.dart';
+import 'package:pinterest_clone/features/saved/data/models/local_media_model.dart';
+import 'package:pinterest_clone/features/saved/presentation/widgets/save_to_board_modal.dart';
 import 'package:shimmer/shimmer.dart';
 
 class SearchResultScreen extends ConsumerStatefulWidget {
   final String query;
+  final String? contextualText;
+  final bool showTags;
 
-  const SearchResultScreen({super.key, required this.query});
+  const SearchResultScreen({
+    super.key,
+    required this.query,
+    this.contextualText,
+    this.showTags = false,
+  });
 
   @override
   ConsumerState<SearchResultScreen> createState() => _SearchResultScreenState();
@@ -63,8 +72,21 @@ class _SearchResultScreenState extends ConsumerState<SearchResultScreen> {
           children: [
             const SizedBox(height: 10),
             _buildHeader(context),
+            if (widget.contextualText != null) ...[
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  widget.contextualText!,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.start,
+                ),
+              ),
+            ],
             const SizedBox(height: 10),
-            _buildTagsShimmer(),
+            if (widget.showTags) _buildTagsList(),
             const SizedBox(height: 10),
             Expanded(
               child: PinterestRefreshIndicator(
@@ -74,8 +96,8 @@ class _SearchResultScreenState extends ConsumerState<SearchResultScreen> {
                 child: searchState.isLoading && searchState.photos.isEmpty
                     ? _buildLoadingGrid()
                     : searchState.error != null && searchState.photos.isEmpty
-                        ? _buildErrorView(searchState.error!)
-                        : _buildMasonryGrid(searchState),
+                    ? _buildErrorView(searchState.error!)
+                    : _buildMasonryGrid(searchState),
               ),
             ),
             if (searchState.isMoreLoading)
@@ -119,10 +141,7 @@ class _SearchResultScreenState extends ConsumerState<SearchResultScreen> {
               ),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.tune, size: 28),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.tune, size: 28), onPressed: () {}),
         ],
       ),
     );
@@ -146,6 +165,64 @@ class _SearchResultScreenState extends ConsumerState<SearchResultScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildTagsList() {
+    final tags = [
+      'Aesthetic',
+      'Drawing',
+      'Wallpaper',
+      'Outfit',
+      'Design',
+      'Art',
+      'Background',
+      'Portrait',
+    ];
+    final colors = [
+      Colors.redAccent,
+      Colors.blueAccent,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+      Colors.pink,
+      Colors.indigo,
+    ];
+
+    return SizedBox(
+      height: 40,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        itemCount: tags.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            onTap: () {
+              final newQuery = '${widget.query} ${tags[index]}';
+              context.push(
+                '/search_result/$newQuery',
+                extra: {'showTags': true},
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: colors[index % colors.length],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                tags[index],
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           );
@@ -221,7 +298,28 @@ class _SearchResultScreenState extends ConsumerState<SearchResultScreen> {
                 bottom: 8,
                 right: 8,
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    final localMedia = LocalMediaModel(
+                      id: photo.id.toString(),
+                      url: photo.src.large,
+                      type: MediaType.photo,
+                      width: photo.width,
+                      height: photo.height,
+                      title: photo.alt,
+                      description: photo.alt,
+                      photographer: photo.photographer,
+                      photographerUrl: photo.photographerUrl,
+                      savedAt: DateTime.now(),
+                      pexelsPhoto: photo,
+                    );
+
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => SaveToBoardModal(media: localMedia),
+                    );
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(

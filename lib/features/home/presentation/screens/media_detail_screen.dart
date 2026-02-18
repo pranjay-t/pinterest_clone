@@ -189,11 +189,7 @@ class _MediaDetailScreenState extends ConsumerState<MediaDetailScreen> {
                           _buildVideoPlayer(_media as PexelsVideo),
 
                         const SizedBox(height: 8),
-                        // Reusing existing widgets that expect PexelsPhoto.
-                        // Check if compatible or need refactoring.
-                        // ImageDetailActions expects PexelsPhoto.
-                        // If video, we might show different actions or mock it.
-                        // For now if Photo, show actions. If Video, show rudimentary actions?
+
                         if (_media is PexelsPhoto) ...[
                           ImageDetailActions(media: _media as PexelsPhoto),
                           const SizedBox(height: 8),

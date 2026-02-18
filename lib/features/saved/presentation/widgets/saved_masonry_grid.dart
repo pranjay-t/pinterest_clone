@@ -12,18 +12,20 @@ import 'package:pinterest_clone/features/saved/presentation/widgets/saved_video_
 class SavedMasonryGrid extends StatelessWidget {
   final List<LocalMediaModel> mediaList;
   final ScrollController? scrollController;
+  final int crossAxisCount;
 
   const SavedMasonryGrid({
     super.key,
     required this.mediaList,
     this.scrollController,
+    this.crossAxisCount = 2,
   });
 
   @override
   Widget build(BuildContext context) {
     return MasonryGridView.count(
       controller: scrollController,
-      crossAxisCount: 2,
+      crossAxisCount: crossAxisCount,
       mainAxisSpacing: 10,
       crossAxisSpacing: 5,
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -76,22 +78,11 @@ class SavedMasonryGrid extends StatelessWidget {
                     ),
                     errorWidget: (context, url, error) => const Icon(Icons.error),
                     fit: BoxFit.cover,
+                    width: double.infinity,
                   ),
                 ),
               ),
-            const SizedBox(height: 6),
-            GestureDetector(
-              onTap: () {
-                if (item.pexelsPhoto != null) {
-                  PinOptionsModal.show(context, item.pexelsPhoto);
-                } else if (item.pexelsVideo != null) {
-                  PinOptionsModal.show(context, item.pexelsVideo);
-                } else {
-                  PinOptionsModal.show(context, item);
-                }
-              },
-              child: const Icon(Icons.more_horiz, size: 20),
-            ),
+
           ],
         );
       },

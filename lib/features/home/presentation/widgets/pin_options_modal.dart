@@ -9,11 +9,96 @@ import 'package:pinterest_clone/features/home/data/models/pexels_video_model.dar
 import 'package:pinterest_clone/features/saved/data/models/local_media_model.dart';
 import 'package:pinterest_clone/features/saved/presentation/widgets/save_to_board_modal.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:gal/gal.dart';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:pinterest_clone/core/widgets/custom_toast.dart';
 
 class PinOptionsModal extends StatelessWidget {
   final dynamic media;
 
   const PinOptionsModal({super.key, required this.media});
+
+  Future<void> _downloadMedia(ScaffoldMessengerState messenger) async {
+    try {
+      // Check permissions (Gal handles this, but good to be aware)
+      if (!await Gal.hasAccess()) {
+        await Gal.requestAccess();
+      }
+
+      String? downloadUrl;
+      bool isVideo = false;
+
+      if (media is PexelsPhoto) {
+        downloadUrl = (media as PexelsPhoto).src.original;
+      } else if (media is PexelsVideo) {
+        isVideo = true;
+        final video = media as PexelsVideo;
+        // Try to get HD or closest to it
+        try {
+          final videoFile = video.videoFiles.firstWhere(
+            (f) => f.quality == 'hd',
+            orElse: () => video.videoFiles.first,
+          );
+          downloadUrl = videoFile.link;
+        } catch (e) {
+          if (video.videoFiles.isNotEmpty) {
+            downloadUrl = video.videoFiles.first.link;
+          }
+        }
+      } else if (media is LocalMediaModel) {
+        downloadUrl = (media as LocalMediaModel).url;
+        // Check if it's a video based on type or extension if needed,
+        // but LocalMediaModel should have a type.
+        if ((media as LocalMediaModel).type == MediaType.video) {
+          isVideo = true;
+          if ((media as LocalMediaModel).videoUrl != null) {
+            downloadUrl = (media as LocalMediaModel).videoUrl;
+          }
+        }
+      }
+
+       if (downloadUrl == null || downloadUrl.isEmpty) {
+        CustomToast.showWithMessenger(
+            messenger, 'Could not find media to download');
+        return;
+      }
+
+      // Show loading indicator (using standard snackbar for loading, or maybe custom too? let's stick to custom)
+      CustomToast.showWithMessenger(messenger, 'Downloading...');
+
+      // Apply a unique filename
+      final directory = await getTemporaryDirectory();
+      final extension = isVideo ? 'mp4' : 'jpg'; 
+      // You might want to parse the extension from the URL if possible, 
+      // but defaulting to mp4/jpg is often safe enough for Pexels.
+      
+      final filePath = '${directory.path}/pinterest_download_${DateTime.now().millisecondsSinceEpoch}.$extension';
+
+      await Dio().download(downloadUrl, filePath);
+
+      // Save to gallery
+      if (isVideo) {
+        await Gal.putVideo(filePath);
+      } else {
+        await Gal.putImage(filePath);
+      }
+
+      CustomToast.showWithMessenger(messenger, 'Saved to Gallery!');
+      
+      // Cleanup temp file
+      final file = File(filePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+
+    } catch (e) {
+      debugPrint('Download error: $e');
+      debugPrint('Download error: $e');
+      CustomToast.showWithMessenger(messenger, 'Failed to download: $e');
+    }
+  }
 
   static Future<void> show(BuildContext context, dynamic media) {
     return showModalBottomSheet(
@@ -183,10 +268,14 @@ class PinOptionsModal extends StatelessWidget {
 
               _buildOptionItem(
                 context,
-                label: 'Download image',
+                label: (media is PexelsVideo || (media is LocalMediaModel && media.type == MediaType.video)) 
+                    ? 'Download video' 
+                    : 'Download image',
                 imgPath: 'assets/icons/download.png',
                 onTap: () {
+                  final messenger = ScaffoldMessenger.of(context);
                   Navigator.pop(context);
+                  _downloadMedia(messenger);
                 },
               ),
 
@@ -197,7 +286,15 @@ class PinOptionsModal extends StatelessWidget {
                 label: 'See more like this',
                 imgPath: 'assets/icons/heart_off.png',
                 onTap: () {
+                  final messenger = ScaffoldMessenger.of(context);
                   Navigator.pop(context);
+                  CustomToast.showWithMessenger(
+                    messenger,
+                    "Ok! We'll show you more like this",
+                    onUndo: () {
+                      debugPrint("Undo see more");
+                    },
+                  );
                 },
               ),
               SizedBox(height: 8),
@@ -208,7 +305,16 @@ class PinOptionsModal extends StatelessWidget {
                 imgPath: 'assets/icons/see_less.png',
                 scale: 1.4,
                 onTap: () {
+                  final messenger = ScaffoldMessenger.of(context);
                   Navigator.pop(context);
+                  CustomToast.showWithMessenger(
+                    messenger,
+                    "Ok! We'll show you less like this",
+                    onUndo: () {
+                      // Undo logic here
+                      debugPrint("Undo see less");
+                    },
+                  );
                 },
               ),
 

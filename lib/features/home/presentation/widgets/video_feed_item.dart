@@ -8,11 +8,7 @@ class VideoFeedItem extends StatefulWidget {
   final PexelsVideo video;
   final VoidCallback onTap;
 
-  const VideoFeedItem({
-    super.key,
-    required this.video,
-    required this.onTap,
-  });
+  const VideoFeedItem({super.key, required this.video, required this.onTap});
 
   @override
   State<VideoFeedItem> createState() => _VideoFeedItemState();
@@ -26,18 +22,15 @@ class _VideoFeedItemState extends State<VideoFeedItem> {
   @override
   void initState() {
     super.initState();
-    // Use the lowest quality for feed to save bandwidth/memory
-    // Sort by size or width? Let's pick 'sd' or smallest width that is not super small
-    // The video_files list has qualities.
     final videoFile = _selectVideoFile(widget.video.videoFiles);
-    
+
     _controller = VideoPlayerController.networkUrl(Uri.parse(videoFile.link))
       ..initialize().then((_) {
         if (mounted) {
           setState(() {
             _initialized = true;
             _controller.setLooping(true);
-            _controller.setVolume(0); // Muted by default in feed
+            _controller.setVolume(0);
             if (_isVisible) {
               _controller.play();
             }
@@ -47,9 +40,11 @@ class _VideoFeedItemState extends State<VideoFeedItem> {
   }
 
   PexelsVideoFile _selectVideoFile(List<PexelsVideoFile> files) {
-    // Prefer 'sd' or width around 360-540 for feed
     try {
-      return files.firstWhere((f) => f.quality == 'sd' && f.width >= 360, orElse: () => files.first);
+      return files.firstWhere(
+        (f) => f.quality == 'sd' && f.width >= 360,
+        orElse: () => files.first,
+      );
     } catch (e) {
       return files.first;
     }
@@ -63,13 +58,13 @@ class _VideoFeedItemState extends State<VideoFeedItem> {
 
   void _handleVisibilityChanged(VisibilityInfo info) {
     if (!mounted) return;
-    
+
     final isVisible = info.visibleFraction > 0.5;
     if (_isVisible != isVisible) {
       setState(() {
         _isVisible = isVisible;
       });
-      
+
       if (_initialized) {
         if (isVisible) {
           _controller.play();
@@ -100,30 +95,28 @@ class _VideoFeedItemState extends State<VideoFeedItem> {
             fit: StackFit.loose,
             alignment: Alignment.center,
             children: [
-              // Placeholder image while loading or if not initialized
               AspectRatio(
                 aspectRatio: widget.video.width / widget.video.height,
-                child: Image.network(
-                  widget.video.image,
-                  fit: BoxFit.cover,
-                ),
+                child: Image.network(widget.video.image, fit: BoxFit.cover),
               ),
-              
+
               if (_initialized)
                 AspectRatio(
                   aspectRatio: widget.video.width / widget.video.height,
                   child: VideoPlayer(_controller),
                 ),
-                
-              // Timestamp
+
               Positioned(
-                bottom: 8,
-                left: 8,
+                top: 12,
+                left: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                    color: AppColors.darkTextPrimary.withOpacity(0.7), // Using dark background as requested
-                    borderRadius: BorderRadius.circular(4),
+                    color: AppColors.darkCard.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     _formatDuration(widget.video.duration),

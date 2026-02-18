@@ -45,10 +45,7 @@ class ImageDetailActions extends StatelessWidget {
             const SizedBox(width: 16),
             GestureDetector(
               onTap: () {
-                 // TODO: Update BottomSheet to support Media or check type
-                 if (media is PexelsPhoto) {
-                    ImageOptionsBottomSheet.show(context, media as PexelsPhoto);
-                 }
+                ImageOptionsBottomSheet.show(context, media);
               },
               child: _buildActionButton(
                 context,
@@ -64,7 +61,6 @@ class ImageDetailActions extends StatelessWidget {
           context: context,
           text: 'Save',
           onPressed: () {
-            // Create LocalMediaModel
             String imageUrl = '';
             MediaType type = MediaType.photo;
             

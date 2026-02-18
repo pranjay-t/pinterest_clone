@@ -7,7 +7,7 @@ import 'package:pinterest_clone/features/home/presentation/providers/home_provid
 import 'package:pinterest_clone/features/home/presentation/screens/home_screen.dart';
 import 'package:pinterest_clone/features/search/presentation/screens/search.screen.dart';
 import 'package:pinterest_clone/features/create/presentation/screens/create.screen.dart';
-import 'package:pinterest_clone/features/inbox/presentation/screens/inbox.screen.dart';
+import 'package:pinterest_clone/features/inbox/presentation/screens/inbox_screen.dart';
 import 'package:pinterest_clone/features/saved/presentation/screens/saved.screen.dart';
 import 'package:svg_flutter/svg.dart';
 import 'package:pinterest_clone/features/create/presentation/widgets/create_modal.dart';

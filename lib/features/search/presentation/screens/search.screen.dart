@@ -21,42 +21,49 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       'query': 'keychain',
       'title': 'Charming keepsake',
       'desc': 'Customize your keychains',
+      'contextualText': 'Discover unique keychain designs that add a personal touch to your everyday carry.',
     },
     {
       'image': 'assets/images/outfits.jpg',
       'query': 'outfits',
       'title': 'Style it',
       'desc': 'Turn basic into iconic',
+      'contextualText': 'Elevate your wardrobe with these trending outfit inspirations for every occasion.',
     },
     {
       'image': 'assets/images/photo_emb.jpg',
       'query': 'photo embroidery',
       'title': 'Cool craft',
       'desc': 'The art of photo-embroidery',
+      'contextualText': 'Blend photography and embroidery to create stunning, textured masterpieces.',
     },
     {
       'image': 'assets/images/quotes.jpg',
       'query': 'motivational quotes',
       'title': 'Go for it',
       'desc': 'Quotes to recharge your motivation',
+      'contextualText': 'Find the perfect words to inspire, uplift, and keep you going.',
     },
     {
       'image': 'assets/images/iftar.jpg',
       'query': 'iftar recipe',
       'title': 'Festive foods',
       'desc': 'Go-to iftar recipe',
+      'contextualText': 'From classic samosas and chaat vibes to air-fryer snacks and yummy sweets, this iftar recipe guide has some seriously sastisfying post-roza bites.',
     },
     {
       'image': 'assets/images/home_decor.jpg',
       'query': 'home decor',
       'title': 'Home sweet home',
       'desc': 'Design your home your way',
+      'contextualText': 'Transform your space with cozy, modern, and chic home decor ideas.',
     },
     {
       'image': 'assets/images/scents.jpg',
       'query': 'scents',
       'title': 'Layering up',
       'desc': 'Scent stacking is the trend to try',
+      'contextualText': 'Master the art of scent layering to create a fragrance that is uniquely yours.',
     },
   ];
 
@@ -97,7 +104,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: GestureDetector(
                         onTap: () {
-                          context.push('/search_result/${config['query']}');
+                          context.push(
+                            '/search_result/${config['query']}',
+                            extra: {'showTags': true},
+                          );
                         },
                         child: _buildIdeas(
                           height: h * 0.2,
@@ -176,7 +186,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         return Builder(
           builder: (BuildContext context) {
             return GestureDetector(
-              onTap: () => context.push('/search_result/${item['query']}'),
+              onTap: () => context.push(
+                '/search_result/${item['query']}',
+                extra: {'contextualText': item['contextualText']},
+              ),
               child: Stack(
                 fit: StackFit.expand,
                 children: [

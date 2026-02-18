@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinterest_clone/core/theme/app_colors.dart';
 import 'package:pinterest_clone/features/saved/presentation/providers/saved_provider.dart';
+import 'package:pinterest_clone/features/saved/presentation/providers/layout_provider.dart';
 import 'package:pinterest_clone/features/saved/presentation/widgets/saved_masonry_grid.dart';
 import 'package:pinterest_clone/features/saved/presentation/widgets/select_layout_bottom_sheet.dart';
 
@@ -21,6 +22,20 @@ class _MyAllSaveScreenState extends ConsumerState<MyAllSaveScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(savedMediaProvider(widget.boardId));
+    final layout = ref.watch(pinLayoutProvider);
+
+    int crossAxisCount = 2;
+    switch (layout) {
+      case PinLayout.wide:
+        crossAxisCount = 1;
+        break;
+      case PinLayout.standard:
+        crossAxisCount = 2;
+        break;
+      case PinLayout.compact:
+        crossAxisCount = 3;
+        break;
+    }
     
     return Scaffold(
       body: SafeArea(
@@ -101,8 +116,13 @@ class _MyAllSaveScreenState extends ConsumerState<MyAllSaveScreen> {
                       return const Center(child: Text("No pins yet"));
                     }
 
-                    return SavedMasonryGrid(
-                      mediaList: state.media,
+                    return AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: SavedMasonryGrid(
+                        key: ValueKey(crossAxisCount),
+                        mediaList: state.media,
+                        crossAxisCount: crossAxisCount,
+                      ),
                     );
                   },
                 ),

@@ -48,6 +48,7 @@ class _CreateBoardScreenState extends ConsumerState<CreateBoardScreen> {
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
         backgroundColor: AppColors.darkBackground,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
         actionsPadding: EdgeInsets.only(right: 12),
         leading: IconButton(
